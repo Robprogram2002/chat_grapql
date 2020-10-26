@@ -2,31 +2,25 @@ const { UserInputError, AuthenticationError } = require("apollo-server");
 const User = require("../../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { Op } = require("sequelize");
 
 module.exports = {
   Query: {
-    getUsers: async (_, __, context) => {
-      if (context.req && context.req.headers.authorization) {
-        const token = context.req.headers.authorization.split("Bearer ")[1];
-        jwt.verify(token, "ndjkasnjdnjkaskdmas", (err, decodedToken) => {
-          if (err) {
-            throw new UserInputError(err);
-          }
-        });
+    getUsers: async (_, __, { user }) => {
+      if (!user) throw new AuthenticationError("Unauthenticated");
+      const users = await User.findAll({
+        // where: { username: { [Op.ne]: user.username } },
+      });
 
-        const users = await User.findAll();
-        return users;
-      } else {
-        throw new UserInputError("Must be provided a user token header");
-      }
+      return users;
     },
-    login: async (_, { email, password }) => {
+    login: async (_, { username, password }) => {
       let errors = {};
       try {
-        const user = await User.findOne({ where: { email } });
+        const user = await User.findOne({ where: { username } });
 
         if (!user) {
-          errors.email = "user not found";
+          errors.username = "user not found";
           throw new UserInputError("User not found", { errors });
         }
         const correctPasswor = await bcrypt.compare(password, user.password);
@@ -39,7 +33,7 @@ module.exports = {
 
         const token = jwt.sign(
           {
-            email,
+            username,
             id: user.id,
           },
           "ndjkasnjdnjkaskdmas",

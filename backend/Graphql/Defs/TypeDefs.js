@@ -12,9 +12,18 @@ module.exports = gql`
     token: String
   }
 
+  type Messege {
+    uuid: String!
+    content: String!
+    from: String!
+    createdAt: String!
+    to: String!
+  }
+
   type Query {
     getUsers: [User]!
-    login(email: String!, password: String!): User!
+    login(username: String!, password: String!): User!
+    getMessages(from: String!): [Messege]!
   }
 
   type Mutation {
@@ -24,5 +33,6 @@ module.exports = gql`
       password: String!
       confirmPassword: String!
     ): User!
+    sendMessage(to: String!, content: String!): Messege!
   }
 `;

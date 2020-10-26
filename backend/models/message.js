@@ -1,0 +1,48 @@
+"use strict";
+const { Model, DataTypes } = require("sequelize");
+const sequelize = require("../database/index");
+const MessegeCreator = (sequelize, DataTypes) => {
+  class Message extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      // define association here
+    }
+  }
+  Message.init(
+    {
+      content: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      uuid: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        defaultValue: DataTypes.UUIDV4,
+        unique: true,
+      },
+      from: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      to: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+    },
+    {
+      sequelize,
+      modelName: "Message",
+      tableName: "messages",
+      timestamps: true,
+    }
+  );
+  return Message;
+};
+
+const Messege = MessegeCreator(sequelize, DataTypes);
+
+module.exports = Messege;
