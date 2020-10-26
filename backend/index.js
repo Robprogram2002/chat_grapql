@@ -6,6 +6,7 @@ const typeDefs = require("./Graphql/Defs/TypeDefs");
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: (ctx) => ctx,
 });
 
 server
